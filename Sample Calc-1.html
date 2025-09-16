@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Calculator</title>
+    <!-- Use the Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the calculator buttons and layout */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .calculator-button {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            padding: 1.5rem;
+            border-radius: 9999px;
+            font-size: 1.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            cursor: pointer;
+            user-select: none;
+            text-align: center;
+        }
+
+        .calculator-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .calculator-button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .operator-btn {
+            background-color: #60a5fa;
+            color: white;
+        }
+
+        .equals-btn {
+            background-color: #3b82f6;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .clear-btn {
+            background-color: #f87171;
+            color: white;
+        }
+
+        .display {
+            background-color: #1f2937;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            font-size: 3rem;
+            text-align: right;
+            overflow: hidden;
+            word-wrap: break-word;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Responsive layout adjustments */
+        @media (max-width: 640px) {
+            .calculator-button {
+                padding: 1rem;
+                font-size: 1.25rem;
+            }
+            .display {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Calculator container -->
+    <div class="bg-white p-6 rounded-3xl shadow-2xl w-full max-w-sm">
+
+        <!-- Display screen -->
+        <div id="display" class="display">0</div>
+
+        <!-- Calculator buttons grid -->
+        <div class="calculator-grid">
+            <button class="calculator-button clear-btn" onclick="clearDisplay()">C</button>
+            <button class="calculator-button operator-btn" onclick="appendOperator('/')">/</button>
+            <button class="calculator-button operator-btn" onclick="appendOperator('*')">*</button>
+            <button class="calculator-button" onclick="appendNumber('7')">7</button>
+            <button class="calculator-button" onclick="appendNumber('8')">8</button>
+            <button class="calculator-button" onclick="appendNumber('9')">9</button>
+            <button class="calculator-button operator-btn" onclick="appendOperator('-')">-</button>
+            <button class="calculator-button" onclick="appendNumber('4')">4</button>
+            <button class="calculator-button" onclick="appendNumber('5')">5</button>
+            <button class="calculator-button" onclick="appendNumber('6')">6</button>
+            <button class="calculator-button operator-btn" onclick="appendOperator('+')">+</button>
+            <button class="calculator-button" onclick="appendNumber('1')">1</button>
+            <button class="calculator-button" onclick="appendNumber('2')">2</button>
+            <button class="calculator-button" onclick="appendNumber('3')">3</button>
+            <button class="calculator-button equals-btn" onclick="calculateResult()">=</button>
+            <button class="calculator-button" onclick="appendNumber('0')">0</button>
+            <button class="calculator-button" onclick="appendNumber('.')">.</button>
+        </div>
+    </div>
+
+    <!-- JavaScript logic for the calculator -->
+    <script>
+        const display = document.getElementById('display');
+        let currentInput = '';
+        let result = 0;
+        let operator = '';
+
+        function appendNumber(number) {
+            if (currentInput.includes('.') && number === '.') {
+                return; // Prevent multiple decimal points
+            }
+            currentInput += number;
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            if (currentInput === '' && operator !== '') {
+                operator = op;
+                return; // Change operator if no number has been entered yet
+            }
+            if (currentInput === '') {
+                return; // Don't start with an operator
+            }
+            calculateResult();
+            operator = op;
+            currentInput = '';
+        }
+
+        function calculateResult() {
+            if (currentInput === '') {
+                return;
+            }
+            const secondOperand = parseFloat(currentInput);
+            if (operator === '+') {
+                result += secondOperand;
+            } else if (operator === '-') {
+                result -= secondOperand;
+            } else if (operator === '*') {
+                result *= secondOperand;
+            } else if (operator === '/') {
+                if (secondOperand === 0) {
+                    display.textContent = 'Error';
+                    result = 0;
+                    currentInput = '';
+                    operator = '';
+                    return;
+                }
+                result /= secondOperand;
+            } else {
+                result = parseFloat(currentInput);
+            }
+            currentInput = '';
+            updateDisplay(result);
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            result = 0;
+            operator = '';
+            updateDisplay();
+        }
+
+        function updateDisplay(value = '') {
+            if (value === '') {
+                display.textContent = currentInput || '0';
+            } else {
+                display.textContent = value;
+            }
+        }
+    </script>
+
+</body>
+</html>
+
